@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canteen Waste AI | Minimalist Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #faf7f2;
+            --card-bg: #ffffff;
+            --border-color: #e5e1da;
+            --text-main: #4a4a4a;
+            --text-light: #8e8e8e;
+            --low-accent: #82a67d;
+            --medium-accent: #d4a373;
+            --high-accent: #bc6c25;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            line-height: 1.5;
+        }
+
+        /* --- Header --- */
+        header {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            color: var(--text-main);
+            text-transform: uppercase;
+        }
+
+        /* --- Main Content --- */
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 2rem;
+        }
+
+        /* Card System */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        /* Video Section */
+        .video-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .video-frame {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .video-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Prevents stretching */
+        }
+
+        .badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            border: 1px solid var(--border-color);
+            letter-spacing: 0.05em;
+        }
+
+        /* Feedback Section (FIXED SIZE TO PREVENT GLITCHING) */
+        .feedback-section {
+            width: 450px;
+            height: 520px; /* Locked height */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Fixed Message Box */
+        .message-box-container {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        #messageBox {
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        /* Fixed GIF Box */
+        .visual-container {
+            flex: 1;
+            width: 100%;
+            background: #fafafa;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+        }
+
+        #slideImage {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Keeps aesthetic consistent */
+            display: none;
+            animation: softFade 0.8s ease;
+        }
+
+        @keyframes softFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* --- Footer --- */
+        footer {
+            height: 50px;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .ticker {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .ticker span {
+            display: inline-block;
+            white-space: nowrap;
+            padding-left: 100%;
+            animation: ticker 25s linear infinite;
+            font-size: 0.75rem;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            color: var(--text-light);
+            text-transform: uppercase;
+        }
+
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            main { flex-direction: column; overflow-y: auto; }
+            .feedback-section { width: 100%; height: auto; min-height: 400px; }
+            body { overflow-y: auto; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Canteen Waste AI</h1>
+</header>
+
+<main>
+    <div class="card video-section">
+        <div class="video-frame">
+            <img src="/video_feed" alt="Detection stream">
+            <div id="statusBadge" class="badge">Monitoring...</div>
+        </div>
+    </div>
+
+    <div class="card feedback-section">
+        <div class="message-box-container">
+            <div id="messageBox">Ready to analyze.</div>
+        </div>
+        <div class="visual-container">
+            <img id="slideImage" alt="Feedback visual">
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="ticker">
+        <span>Take all you can eat, but eat all you take &bull; Mindful eating for a sustainable future &bull; Zero waste to landfill initiative &bull; Small steps, big impact </span>
+    </div>
+</footer>
+
+<script>
+    const lowMsgs = [
+        "Excellent mindful consumption.",
+        "Sustainable choices in action.",
+        "Plate cleared. Well done.",
+        "Great effort on resource preservation.",
+        "A responsible choice for a better future."
+    ];
+
+    const mediumMsgs = [
+        "Let's aim for a cleaner plate next time.",
+        "A mindful start. Every bit counts.",
+        "Small changes lead to big impacts.",
+        "Consider taking slightly smaller portions.",
+        "Work with us to reduce waste."
+    ];
+
+    const highMsgs = [
+        "Excess waste detected. Let's be mindful.",
+        "Food is precious. Take only what you need.",
+        "Sustainability starts with each serving.",
+        "Respect the resources we share.",
+        "Help us reach zero waste goals."
+    ];
+
+    // Asset paths from static/media
+    const highImages = ["/static/media/img1.jpg", "/static/media/img2.jpg", "/static/media/gif1.gif", "/static/media/OIP1.webp", "/static/media/img3.jpg", "/static/media/OIP3.webp", "/static/media/OIP2.webp", "/static/media/IMG4.jpeg"];
+    const mediumImages = ["/static/media/medium1.gif", "/static/media/medium2.gif"];
+    const lowImages = ["/static/media/low4.gif", "/static/media/low1.gif", "/static/media/low3.gif", "/static/media/low2.gif"];
+
+    function random(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    let lastType = "";
+
+    function update() {
+        fetch("/wastage_data")
+            .then(r => r.json())
+            .then(data => {
+                const label = (data.label || "").toLowerCase();
+                const msgBox = document.getElementById("messageBox");
+                const img = document.getElementById("slideImage");
+                const badge = document.getElementById("statusBadge");
+
+                let currentType = "";
+                if (label.includes("high")) currentType = "high";
+                else if (label.includes("medium")) currentType = "medium";
+                else if (label.includes("low")) currentType = "low";
+
+                if (currentType !== lastType) {
+                    lastType = currentType;
+                    
+                    if (currentType === "high") {
+                        msgBox.innerText = random(highMsgs);
+                        msgBox.style.color = "var(--high-accent)";
+                        img.style.display = "block";
+                        img.src = random(highImages);
+                        badge.innerText = "Alert: High Waste";
+                        badge.style.color = "var(--high-accent)";
+                    } else if (currentType === "medium") {
+                        msgBox.innerText = random(mediumMsgs);
+                        msgBox.style.color = "var(--medium-accent)";
+                        img.style.display = "block";
+                        img.src = random(mediumImages);
+                        badge.innerText = "Moderate Waste";
+                        badge.style.color = "var(--medium-accent)";
+                    } else if (currentType === "low") {
+                        msgBox.innerText = random(lowMsgs);
+                        msgBox.style.color = "var(--low-accent)";
+                        img.style.display = "block";
+                        img.src = random(lowImages);
+                        badge.innerText = "Optimal Plate";
+                        badge.style.color = "var(--low-accent)";
+                    } else {
+                        msgBox.innerText = "Ready to analyze.";
+                        msgBox.style.color = "var(--text-main)";
+                        img.style.display = "none";
+                        badge.innerText = "Monitoring...";
+                        badge.style.color = "var(--text-main)";
+                    }
+                }
+            });
+    }
+
+    setInterval(update, 500);
+</script>
+
+</body>
+</html>
